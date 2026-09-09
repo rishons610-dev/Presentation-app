@@ -61,6 +61,487 @@
       font-size: 0.9rem;
     }
 
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem; }
+
+    button.action-btn {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 4px;
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    button.accent { background: var(--accent); }
+    button.warning { background: var(--warning); }
+    button.danger { background: var(--danger); }
+
+    .song-list, .schedule-list {
+      max-height: 220px;
+      overflow-y: auto;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      background: #0f172a;
+      margin-bottom: 0.5rem;
+    }
+    .song-item, .schedule-item {
+      padding: 0.6rem;
+      border-bottom: 1px solid #1e293b;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+    .song-item:hover, .schedule-item:hover { background: #1e293b; }
+    .song-item:last-child, .schedule-item:last-child { border-bottom: none; }
+    .type-badge {
+      font-size: 0.7rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+    .badge-song { background: var(--primary); color: #fff; }
+
+    /* Stage Area Layout */
+    #stage-wrapper {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #000;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+    }
+
+    .bg-black { background: #000000 !important; }
+    .bg-blue { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%) !important; }
+    .bg-purple { background: linear-gradient(135deg, #2e1065 0%, #581c87 100%) !important; }
+    .bg-gradient { background: linear-gradient(135deg, #065f46 0%, #0f172a 100%) !important; }
+
+    #text-box {
+      width: 90%;
+      text-align: center;
+      padding: 0.5rem;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .p-text { font-size: 1.2rem; font-weight: bold; color: #ffffff; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); transition: color 0.2s ease; width: 100%; white-space: pre-line; }
+    .s-text { font-size: 1rem; color: #fde047; margin-top: 0.25rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); transition: color 0.2s ease; width: 100%; white-space: pre-line; }
+    
+    .ref-text { 
+      font-size: 0.85rem; 
+      color: #cbd5e1; 
+      font-style: italic;
+      display: inline-block;
+      transition: all 0.2s ease;
+      margin: 0.5rem 0;
+    }
+
+    .ref-text.has-box {
+      background-color: #2563eb;
+      color: #ffffff;
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      font-style: normal;
+      font-weight: bold;
+    }
+
+    .pos-bottom { order: 3; }
+    .pos-top { order: -1; }
+
+    #fs-toggle-btn {
+      display: none;
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 10;
+      padding: 0.5rem 1rem;
+      background: rgba(37, 99, 235, 0.8);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.8rem;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Presentation Mode Rules */
+    body.presentation-mode header,
+    body.presentation-mode .tab-bar,
+    body.presentation-mode .tab-content { display: none !important; }
+    body.presentation-mode { overflow: hidden; background: #000; justify-content: center; align-items: center; }
+    body.presentation-mode .app-container { padding: 0; width: 100vw; height: 100vh; justify-content: center; align-items: center; }
+    body.presentation-mode #stage-wrapper { width: 100vw; height: 100vh; border-radius: 0; aspect-ratio: auto; }
+    body.presentation-mode #fs-toggle-btn { display: block; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h3 style="font-size: 1rem;">VerseView Mobile Pro</h3>
+    <button onclick="launchOutput()" style="padding: 0.4rem 0.8rem; background: var(--accent); color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 0.75rem; cursor: pointer;">
+      📺 Open Output
+    </button>
+  </header>
+
+  <div class="app-container">
+    
+    <!-- Tab Controls -->
+    <div class="tab-bar">
+      <button class="tab-btn active" id="btn-bible" onclick="switchTab('bible')">Bible</button>
+      <button class="tab-btn" id="btn-songs" onclick="switchTab('songs')">Songs</button>
+      <button class="tab-btn" id="btn-schedule" onclick="switchTab('schedule')">📅 Schedule</button>
+      <button class="tab-btn" id="btn-versions" onclick="switchTab('versions')">Bibles +</button>
+      <button class="tab-btn" id="btn-colors" onclick="switchTab('colors')">Styles</button>
+      <button class="tab-btn" id="btn-quick" onclick="switchTab('quick')">Presets</button>
+      <button class="tab-btn" id="btn-display" onclick="switchTab('display')">Theme</button>
+    </div>
+
+    <!-- 1. Bible Section -->
+    <div id="tab-bible" class="tab-content active">
+      <label>Primary Translation</label>
+      <select id="p-version-select" onchange="renderVerse()"></select>
+
+      <label>Secondary Translation</label>
+      <select id="s-version-select" onchange="renderVerse()">
+        <option value="none">None (Single Version)</option>
+      </select>
+
+      <label>Select Passage / Verse</label>
+      <select id="verse-picker" onchange="renderVerse()">
+        <option value="j316">John 3:16</option>
+        <option value="p231">Psalm 23:1</option>
+        <option value="g11">Genesis 1:1</option>
+        <option value="p119">Psalm 119:105</option>
+      </select>
+
+      <div class="btn-grid">
+        <button class="action-btn warning" onclick="renderVerse()">Show Verse</button>
+        <button class="action-btn danger" onclick="blankScreen()">Blackout Screen</button>
+      </div>
+    </div>
+
+    <!-- 2. Song Library -->
+    <div id="tab-songs" class="tab-content">
+      <label style="font-weight: bold; color: var(--accent);">🎵 Song Library & Search</label>
+      <input type="text" id="song-search" placeholder="🔍 Search saved songs..." oninput="filterSongs()">
+      
+      <div class="song-list" id="song-list-container"></div>
+
+      <hr style="border-color: #334155; margin: 0.75rem 0;">
+
+      <label style="font-weight: bold; color: var(--accent);">🌐 Dual-Language Lyric Slide Generator</label>
+      <label>Song Title</label>
+      <input type="text" id="song-title-input" placeholder="e.g., Amazing Grace / Sublime Gracia">
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+        <div>
+          <label style="font-weight: bold; color: #38bdf8;">Language 1 (Primary)</label>
+          <textarea id="lyrics-primary-input" rows="5" placeholder="Verse 1 Line 1&#10;Verse 1 Line 2"></textarea>
+        </div>
+        <div>
+          <label style="font-weight: bold; color: #fde047;">Language 2 (Secondary)</label>
+          <textarea id="lyrics-secondary-input" rows="5" placeholder="Verso 1 Línea 1&#10;Verso 1 Línea 2"></textarea>
+        </div>
+      </div>
+
+      <div class="btn-grid">
+        <button class="action-btn accent" onclick="generateAndSaveSong()">💾 Save Song</button>
+      </div>
+
+      <div id="slide-nav-box" style="margin-top: 0.75rem; display: none; background: #0f172a; padding: 0.5rem; border-radius: 6px; border: 1px solid #334155;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+          <span style="font-size: 0.8rem; color: #cbd5e1;" id="active-song-title">Active Song</span>
+          <span style="font-size: 0.8rem; font-weight: bold; color: var(--accent);" id="slide-indicator">Slide 1 / 1</span>
+        </div>
+        <div class="btn-grid">
+          <button class="action-btn" onclick="prevSlide()">⬅ Prev Slide</button>
+          <button class="action-btn" onclick="nextSlide()">Next Slide ➡</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Schedules Manager -->
+    <div id="tab-schedule" class="tab-content">
+      <label style="font-weight: bold; color: var(--accent);">📅 Program Schedule Manager</label>
+      <div class="schedule-list" id="schedule-list-container">
+        <div style="padding:0.6rem; color:#94a3b8; font-size:0.8rem;">No schedule items added yet.</div>
+      </div>
+    </div>
+
+    <!-- 4. Custom Bible Version Builder -->
+    <div id="tab-versions" class="tab-content">
+      <label>Version Code (e.g., NIV, KJV, NVI)</label>
+      <input type="text" id="v-code" placeholder="e.g. NIV">
+
+      <label>Version Name</label>
+      <input type="text" id="v-name" placeholder="e.g. New International Version">
+
+      <label style="margin-top:0.5rem; font-weight:bold;">Custom Verse Samples</label>
+
+      <label>John 3:16 Text</label>
+      <textarea id="v-j316" rows="2" placeholder="Text for John 3:16..."></textarea>
+
+      <label>Psalm 23:1 Text</label>
+      <textarea id="v-p231" rows="2" placeholder="Text for Psalm 23:1..."></textarea>
+
+      <button class="action-btn accent" onclick="saveCustomVersion()">💾 Save Bible Version</button>
+    </div>
+
+    <!-- 5. Styles Settings -->
+    <div id="tab-colors" class="tab-content">
+      <label>Font Family Selection</label>
+      <select id="font-family-select" onchange="applyFontFamily(this.value)">
+        <option value="system-ui">Default System</option>
+        <option value="Georgia, serif">Georgia (Serif)</option>
+        <option value="'Courier New', monospace">Courier (Monospace)</option>
+        <option value="'Trebuchet MS', sans-serif">Trebuchet</option>
+      </select>
+
+      <hr style="border-color: #334155; margin: 0.75rem 0;">
+
+      <label style="font-weight: bold; color: var(--accent);">Header Box Settings</label>
+      
+      <label>Position</label>
+      <select id="ref-pos-select" onchange="updateRefSettings()">
+        <option value="pos-bottom">Bottom (Below Text)</option>
+        <option value="pos-top">Top (Above Text)</option>
+      </select>
+
+      <label>Header Style</label>
+      <select id="ref-style-mode" onchange="updateRefSettings()">
+        <option value="plain">Plain Text</option>
+        <option value="box">Header Box Background</option>
+      </select>
+
+      <div id="header-box-controls" style="display: none;">
+        <label>Box Background Color</label>
+        <input type="color" id="box-bg-color" value="#2563eb" onchange="updateRefSettings()">
+
+        <label>Box Text Color</label>
+        <input type="color" id="box-text-color" value="#ffffff" onchange="updateRefSettings()">
+
+        <label>Shape Radius</label>
+        <select id="box-shape" onchange="updateRefSettings()">
+          <option value="0px">Sharp Square</option>
+          <option value="6px">Rounded Corners</option>
+          <option value="20px">Pill Shape</option>
+        </select>
+      </div>
+
+      <hr style="border-color: #334155; margin: 0.75rem 0;">
+
+      <label>Primary Text Color</label>
+      <input type="color" id="p-custom-color" value="#ffffff" onchange="selectColor('p', this.value)" style="height: 40px;">
+
+      <label style="margin-top:0.75rem;">Secondary Text Color</label>
+      <input type="color" id="s-custom-color" value="#fde047" onchange="selectColor('s', this.value)" style="height: 40px;">
+    </div>
+
+    <!-- 6. Presets -->
+    <div id="tab-quick" class="tab-content">
+      <label>Quick Stage Slides</label>
+      <div class="btn-grid">
+        <button class="action-btn" onclick="sendPreset('Welcome to Service!', '¡Bienvenidos al Servicio!', 'Opening Slide')">👋 Welcome</button>
+        <button class="action-btn" onclick="sendPreset('Praise & Worship', 'Alabanza y Adoración', 'Service Title')">🎵 Worship</button>
+        <button class="action-btn" onclick="sendPreset('Amen & Hallelujah!', '¡Amén y Aleluya!', 'Congregational')">🙌 Amen</button>
+        <button class="action-btn" onclick="sendPreset('God Bless You!', '¡Dios te Bendiga!', 'Benediction')">🙏 Closing</button>
+      </div>
+    </div>
+
+    <!-- 7. Display Settings -->
+    <div id="tab-display" class="tab-content">
+      <label>Stage Background Theme</label>
+      <select id="bg-theme" onchange="changeTheme()">
+        <option value="bg-black">Solid Black</option>
+        <option value="bg-blue">Deep Ocean Blue</option>
+        <option value="bg-purple">Royal Purple Gradient</option>
+        <option value="bg-gradient">Emerald Glow</option>
+      </select>
+    </div>
+
+    <!-- Stage Output -->
+    <div id="stage-wrapper" class="bg-black">
+      <button id="fs-toggle-btn" onclick="toggleFullscreen()">📺 Fullscreen (F)</button>
+      <div id="text-box">
+        <div id="out-p" class="p-text">For God so loved the world...</div>
+        <div id="out-s" class="s-text">Porque de tal manera amó Dios al mundo...</div>
+        <div id="out-r" class="ref-text pos-bottom">John 3:16 (KJV / RVR)</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let bibleVersions = JSON.parse(localStorage.getItem('custom_bible_versions')) || {
+      KJV: {
+        name: "King James Version (English)",
+        passages: {
+          j316: "For God so loved the world, that he gave his only begotten Son...",
+          p231: "The LORD is my shepherd; I shall not want.",
+          g11: "In the beginning God created the heaven and the earth.",
+          p119: "Thy word is a lamp unto my feet, and a light unto my path."
+        }
+      },
+      RVR: {
+        name: "Reina-Valera 1960 (Spanish)",
+        passages: {
+          j316: "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito...",
+          p231: "Jehová es mi pastor; nada me faltará.",
+          g11: "En el principio creó Dios los cielos y la tierra.",
+          p119: "Lámpara es a mis pies tu palabra, y lumbrera a mi camino."
+        }
+      }
+    };
+
+    let songLibrary = JSON.parse(localStorage.getItem('custom_song_library')) || [
+      {
+        title: "Amazing Grace",
+        slides: [
+          { p: "Amazing grace! How sweet the sound\nThat saved a wretch like me!", s: "Sublime gracia del Señor\nQue a un pecador salvó" },
+          { p: "I once was lost, but now am found;\nWas blind, but now I see.", s: "Fui ciego mas hoy veo yo\nPerdido fui mas hoy" }
+        ]
+      }
+    ];
+
+    let currentActiveSlides = [];
+    let currentSlideIndex = 0;
+    let currentSongTitle = "";
+
+    const passageLabels = {
+      j316: "John 3:16",
+      p231: "Psalm 23:1",
+      g11: "Genesis 1:1",
+      p119: "Psalm 119:105"
+    };
+
+    const bc = new BroadcastChannel('verseview_channel');
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      
+      const targetContent = document.getElementById('tab-' + tabId);
+      const targetBtn = document.getElementById('btn-' + tabId);
+
+      if (targetContent) targetContent.classList.add('active');
+      if (targetBtn) targetBtn.classList.add('active');
+    }
+
+    function launchOutput() {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const presentationUrl = baseUrl + '?mode=presentation';
+
+      const newWin = window.open(presentationUrl, '_blank');
+      
+      if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
+        alert('Pop-up blocked! Please allow pop-ups for this website to open the Output window.');
+      } else {
+        setTimeout(syncStateToChannel, 600);
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.warn(err));
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    function initVersionSelectors() {
+      const pSel = document.getElementById('p-version-select');
+      const sSel = document.getElementById('s-version-select');
+
+      pSel.innerHTML = '';
+      sSel.innerHTML = '<option value="none">None (Single Version)</option>';
+
+      Object.keys(bibleVersions).forEach(code => {
+        pSel.innerHTML += `<option value="${code}">${code} - ${bibleVersions[code].name}</option>`;
+        sSel.innerHTML += `<option value="${code}">${code} - ${bibleVersions[code].name}</option>`;
+      });
+
+      pSel.value = 'KJV';
+      sSel.value = 'RVR';
+    }
+
+    function renderSongList(songs) {
+      const container = document.getElementById('song-list-container');
+      container.innerHTML = '';
+
+      if (songs.length === 0) {
+        container.innerHTML = '<div style="padding:0.6rem; color:#94a3b8; font-size:0.8rem;">No songs found.</div>';
+        return;
+      }
+
+      songs.forEach((song) => {
+        const item = document.createElement('div');
+        item.className = 'song-item';
+        item.onclick = () => loadSongToStage(song);
+        item.innerHTML = `<span>${song.title}</span><span class="type-badge badge-song">${song.slides.length} Slides</span>`;
+        container.appendChild(item);
+      });
+    }
+
+    function filterSongs() {
+      const query = document.getElementById('song-search').value.toLowerCase();
+      renderSongList(songLibrary.filter(s => s.title.toLowerCase().includes(query)));
+    }
+
+    function loadSongToStage(song) {
+      currentActiveSlides = song.slides;
+      currentSongTitle = song.title;
+      currentSlideIndex = 0;
+      displayCurrentSlide();
+    }
+
+    function displayCurrentSlide() {
+      if (currentActiveSlides.length === 0) return;
+      const slide = currentActiveSlides[currentSlideIndex];
+      const refTag = `${currentSongTitle} (${currentSlideIndex + 1}/${currentActiveSlides.length})`;
+
+      updateDisplay(slide.p, slide.s, refTag);
+
+      document.getElementById('slide-nav-box').style.display = 'block';
+      document.getElementById('active-song-title').innerText = currentSongTitle;
+      document.getElementById('slide-indicator').innerText = `S      padding: 0.6rem 0.2rem;
+      font-size: 0.75rem;
+      font-weight: bold;
+      background: transparent;
+      color: #94a3b8;
+      border: none;
+      border-radius: 4px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .tab-btn.active { background: var(--primary) !important; color: white !important; }
+
+    .tab-content { display: none !important; background: var(--panel); padding: 1rem; border-radius: 8px; }
+    .tab-content.active { display: block !important; }
+
+    label { display: block; font-size: 0.8rem; margin: 0.5rem 0 0.25rem; color: #cbd5e1; }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: white;
+      font-size: 0.9rem;
+    }
+
     .color-palette {
       display: grid;
       grid-template-columns: repeat(5, 1fr);

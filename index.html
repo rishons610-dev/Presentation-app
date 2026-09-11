@@ -2,39 +2,122 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090d18">
-<title>VerseView Studio - Rebuilt</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#080a0d">
+<title>VerseView Studio v3</title>
 <style>
-:root {
-  --bg: #090d18;
-  --panel: #111827;
-  --line: #29364d;
-  --text: #f8fafc;
-  --muted: #94a3b8;
-  --blue: #3b82f6;
-  --green: #10b981;
-  --red: #ef4444;
-  --amber: #f59e0b;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; min-height: 100vh; }
-.app { max-width: 1100px; margin: auto; padding: 12px; }
-.top { position: sticky; top: 0; z-index: 10; background: rgba(9, 13, 24, 0.96); backdrop-filter: blur(8px); padding: 10px 0 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
-.brand { font-weight: 900; font-size: 1.1rem; }
-.status { font-size: 11px; color: var(--green); margin-top: 2px; }
-button, input, select, textarea { font: inherit; }
-button { cursor: pointer; border: 0; border-radius: 8px; font-weight: 700; transition: opacity 0.2s; }
-button:hover { opacity: 0.9; }
-button:active { transform: scale(0.98); }
-.output-btn { background: var(--green); color: white; padding: 8px 16px; font-size: 13px; }
-.tabs { display: flex; gap: 6px; overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 4px; margin-bottom: 12px; }
-.tab { flex: 1 0 auto; background: transparent; color: var(--muted); padding: 10px 14px; font-size: 13px; border-radius: 8px; text-align: center; }
-.tab.active { background: var(--blue); color: white; }
-.panel { display: none; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
-.panel.active { display: block; }
-label { display: block; color: #cbd5e1; font-size: 12px; font-weight: 700; margin: 12px 0 6px; }
-input, select, textarea { width: 100%; background: #0b1220; color: white; border: 1px solid var(--line); border-radius: 8px; padding: 10px; outline: 0; }
+:root{--bg:#080a0d;--panel:#101318;--panel2:#151a20;--line:#292f38;--text:#f3f5f7;--muted:#8e97a3;--sidebar:236px;--out:320px;--header:58px;--size:32px}
+*{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font:14px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
+button,input,select,textarea{font:inherit}button{color:inherit;cursor:pointer}a{-webkit-tap-highlight-color:transparent}svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.app{height:100vh;display:grid;grid-template-columns:var(--sidebar) 1fr}.app.collapsed{--sidebar:62px}
+.sidebar{height:100vh;min-width:0;background:#0b0e12;border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}
+.brand{height:var(--header);display:flex;align-items:center;gap:10px;padding:0 12px;border-bottom:1px solid var(--line);white-space:nowrap}.brandIcon{width:34px;height:34px;border:1px solid #555d68;border-radius:10px;display:grid;place-items:center;flex:none}.brandText{font-weight:800}.collapse{margin-left:auto;width:32px;height:32px;display:grid;place-items:center;background:#151920;border:1px solid var(--line);border-radius:9px}.collapsed .brand{justify-content:center;padding:0 8px}.collapsed .brandText,.collapsed .navTitle,.collapsed .sideFoot,.collapsed .nav span{display:none}.collapsed .collapse{margin:0}
+.navScroll{padding:10px 8px;overflow:auto}.navTitle{font-size:9px;text-transform:uppercase;letter-spacing:1.6px;color:#626b76;padding:10px 8px 6px}.nav{display:grid;gap:3px}.nav a{height:43px;display:flex;align-items:center;gap:11px;padding:0 10px;color:#aeb5bf;border:1px solid transparent;border-radius:10px;text-decoration:none}.nav a:hover,.nav a.active{background:#191e25;border-color:#303640;color:#fff}.collapsed .nav a{justify-content:center;padding:0}.sideFoot{margin-top:auto;border-top:1px solid var(--line);padding:11px 13px;color:#68717d;font-size:10px;line-height:1.45}
+.content{height:100vh;min-width:0;display:grid;grid-template-rows:var(--header) 1fr;overflow:hidden}.header{height:var(--header);display:flex;align-items:center;gap:10px;padding:0 17px;background:#0a0d10;border-bottom:1px solid var(--line);z-index:10}.header h1{font-size:19px;margin:0}.sub{font-size:10px;color:var(--muted)}.headerRight{margin-left:auto;display:flex;gap:7px;align-items:center}.status{border:1px solid var(--line);border-radius:99px;padding:6px 9px;font-size:9px;color:#aeb6c0}.status b{color:#fff}.hbtn{height:34px;border:1px solid var(--line);background:#151920;border-radius:9px;padding:0 10px;display:flex;align-items:center;gap:6px;font-size:10px}
+.workspace{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) var(--out);overflow:hidden}.main{min-width:0;min-height:0;overflow:auto;padding:17px 17px 70px}.view{display:none}.view.active{display:block}
+.outputDock{height:100%;min-width:0;background:#0b0e12;border-left:1px solid var(--line);padding:11px;display:flex;flex-direction:column;gap:9px;overflow:hidden}.outHead{height:27px;display:flex;align-items:center;justify-content:space-between;flex:none}.outTitle{font-size:10px;font-weight:800;letter-spacing:.8px}.live{font-size:8px;border:1px solid #444b55;border-radius:99px;padding:4px 7px}.live:before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#d3d6db;margin-right:5px}.screen{width:100%;aspect-ratio:16/9;background:#000;border:1px solid #343940;border-radius:9px;display:flex;align-items:center;justify-content:center;text-align:center;padding:15px;overflow:hidden;flex:none}.screen.blank{background:#111}.screen.blank .slideText{visibility:hidden}.slideText{font-size:var(--size);font-weight:700;line-height:1.3;white-space:pre-wrap}.screen .slideText{font-size:21px}.outMeta{display:flex;justify-content:space-between;color:#68717d;font-size:8px;flex:none}.outBtns{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:6px;flex:none}.outBtn{height:33px;border:1px solid var(--line);background:#151920;border-radius:8px;font-size:9px}.outBtn.primary{background:#e4e6e9;color:#090b0e;border-color:#e4e6e9;font-weight:700}.outBtns2{display:grid;grid-template-columns:1fr 1fr;gap:6px}.upnext{min-height:0;flex:1;border-top:1px solid var(--line);padding-top:9px;overflow:hidden}.upnext h3{font-size:9px;margin:0 0 6px}.miniList{overflow:auto;display:grid;gap:5px;max-height:100%}.mini{padding:7px 8px;background:#101419;border:1px solid var(--line);border-radius:7px;font-size:9px;color:#aab2bc}.mini.current{border-color:#666f7a;color:#fff}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 295px;gap:12px}.heroMain{min-height:220px;border:1px solid var(--line);border-radius:15px;padding:24px;background:linear-gradient(145deg,#181c22,#0e1115);display:flex;flex-direction:column;justify-content:end}.eyebrow{font-size:9px;text-transform:uppercase;letter-spacing:1.6px;color:#727b87}.hero h2{font-size:32px;margin:7px 0}.muted{color:var(--muted)}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.action{border:1px solid var(--line);background:var(--panel);border-radius:13px;padding:14px;display:flex;align-items:center;gap:9px;text-align:left;text-decoration:none}.action:hover{background:#1a1f26}.action small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.grid{display:grid;gap:12px}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px}.kpi b{display:block;font-size:26px;margin:6px 0 1px}.kpi span{font-size:10px;color:var(--muted)}.head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.head h2{font-size:17px;margin:0}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}.btn,.field{border:1px solid var(--line);background:#171b21;color:#fff;border-radius:9px;padding:9px 11px}.btn:hover{background:#20252c}.primary{background:#e4e6e9;color:#090b0e;border-color:#e4e6e9;font-weight:700}.field{outline:none}.field:focus{border-color:#69727d}.grow{flex:1;min-width:140px}.field.select{min-width:130px}textarea.field{width:100%;min-height:175px;resize:vertical}.builder{display:grid;grid-template-columns:1fr 1fr;gap:12px}.preview{min-height:280px;background:#000;border:1px solid #292e34;border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px;overflow:hidden}.list{display:grid;gap:7px}.item{display:flex;align-items:center;justify-content:space-between;gap:9px;background:#0d1014;border:1px solid var(--line);border-radius:10px;padding:10px 11px}.item strong{display:block}.item small{display:block;color:#707986;font-size:10px;margin-top:3px}.itemBtns{display:flex;gap:5px}.iconBtn{width:35px;height:35px;padding:0;display:grid;place-items:center;border:1px solid var(--line);background:#171b21;border-radius:8px}.notice{border:1px solid var(--line);background:#11151a;border-radius:10px;padding:10px 12px;font-size:11px;color:#aeb6c0}.stageFull{background:#000;border:1px solid var(--line);border-radius:14px;min-height:520px;display:flex;align-items:center;justify-content:center;text-align:center;padding:45px}.range{width:100%}
+@media(max-width:1050px){:root{--out:275px}.hero{grid-template-columns:1fr}.actions{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:780px){
+html,body{overflow:hidden}.app{display:block}.sidebar{display:none}.content{height:100vh}.workspace{display:block;position:relative}.main{height:100%;padding:13px 12px 75px}.outputDock{position:fixed;right:10px;top:69px;width:220px;height:auto;max-height:42vh;padding:8px;border:1px solid #3a4048;border-radius:12px;box-shadow:0 15px 35px #000b;z-index:50}.screen .slideText{font-size:14px}.outMeta,.upnext{display:none}.outBtns{grid-template-columns:1fr 1.5fr 1fr}.outBtns2{grid-template-columns:1fr 1fr}.outBtn{height:29px;font-size:8px}.g3{grid-template-columns:1fr 1fr}.builder{grid-template-columns:1fr}.heroMain{min-height:180px}.hero h2{font-size:27px}.actions{grid-template-columns:1fr 1fr}.header{padding:0 12px}.sub{display:none}}
+@media(max-width:450px){.g3,.g2{grid-template-columns:1fr}.outputDock{width:195px}.header h1{font-size:17px}.hbtn{font-size:9px;padding:0 7px}.status{display:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+<symbol id="home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5M9 21v-7h6v7"/></symbol>
+<symbol id="book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22zM4 5.5V22M8 7h8M8 11h8"/></symbol>
+<symbol id="music" viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></symbol>
+<symbol id="calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 14h3M7 17h6"/></symbol>
+<symbol id="layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5zM3 12l9 5 9-5M3 16l9 5 9-5"/></symbol>
+<symbol id="palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18h1.5a2 2 0 0 0 0-4H12a2 2 0 0 1 0-4h3.5A5.5 5.5 0 0 0 21 7.5C19.2 4.8 16 3 12 3Z"/><circle cx="7.5" cy="9" r="1"/><circle cx="10" cy="6.5" r="1"/><circle cx="14" cy="6.5" r="1"/></symbol>
+<symbol id="settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.2-1.7l1.5-1.1-1.6-2.7-1.7.8a7 7 0 0 0-2.8-1.7L14 3h-4l-.2 2.6A7 7 0 0 0 7 7.3l-1.7-.8-1.6 2.7 1.6 2.7a7 7 0 0 0 0 3.4l-1.6 2.7 1.7.8a7 7 0 0 0 2.8-1.7l.2 2.6h4l.2-2.6a7 7 0 0 0 2.8-1.7l1.7.8 1.6-2.7-1.5-1.1A7 7 0 0 0 19 12Z"/></symbol>
+<symbol id="play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></symbol>
+<symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6"/></symbol>
+<symbol id="left" viewBox="0 0 24 24"><path d="m14 5-7 7 7 7"/></symbol>
+<symbol id="right" viewBox="0 0 24 24"><path d="m10 5 7 7-7 7"/></symbol>
+<symbol id="blank" viewBox="0 0 24 24"><path d="M5 5l14 14"/></symbol>
+<symbol id="fullscreen" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></symbol>
+<symbol id="menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+</defs></svg>
+
+<div class="app" id="app">
+<aside class="sidebar">
+<div class="brand"><span class="brandIcon"><svg><use href="#monitor"/></svg></span><span class="brandText">VerseView Studio</span><button class="collapse" id="collapse" title="Collapse sidebar"><svg><use href="#menu"/></svg></button></div>
+<div class="navScroll">
+<div class="navTitle">Workspace</div>
+<nav class="nav">
+<a href="#home" data-panel="home" class="active"><svg><use href="#home"/></svg><span>Dashboard</span></a>
+<a href="#bible" data-panel="bible"><svg><use href="#book"/></svg><span>Bible</span></a>
+<a href="#songs" data-panel="songs"><svg><use href="#music"/></svg><span>Songs</span></a>
+<a href="#service" data-panel="service"><svg><use href="#calendar"/></svg><span>Service</span></a>
+<a href="#presets" data-panel="presets"><svg><use href="#layers"/></svg><span>Presets</span></a>
+<a href="#style" data-panel="style"><svg><use href="#palette"/></svg><span>Style</span></a>
+</nav>
+<div class="navTitle">System</div>
+<nav class="nav"><a href="#settings" data-panel="settings"><svg><use href="#settings"/></svg><span>Settings</span></a></nav>
+</div>
+<div class="sideFoot">Stationary control room<br>JS engine: <span id="sideStatus">active</span></div>
+</aside>
+
+<section class="content">
+<header class="header"><h1 id="pageTitle">Dashboard</h1><span class="sub">Control Room</span><div class="headerRight"><div class="status">ENGINE: <b id="engine">STARTING</b></div><button class="hbtn" id="outputBtn"><svg><use href="#monitor"/></svg> Output</button></div></header>
+<div class="workspace">
+<main class="main">
+
+<section class="view active" id="home">
+<div class="hero"><div class="heroMain"><span class="eyebrow">VerseView Studio v3</span><h2>Ready for service.</h2><div class="muted">Persistent output. Stable workspace. JavaScript-powered control.</div></div>
+<div class="actions"><a class="action" href="#bible" data-panel="bible"><svg><use href="#book"/></svg><span><b>Bible</b><small>Build scripture slides</small></span></a><a class="action" href="#songs" data-panel="songs"><svg><use href="#music"/></svg><span><b>Songs</b><small>Manage lyrics</small></span></a><a class="action" href="#service" data-panel="service"><svg><use href="#calendar"/></svg><span><b>Service</b><small>Running order</small></span></a><a class="action" href="#output" data-panel="output"><svg><use href="#monitor"/></svg><span><b>Output</b><small>Full output view</small></span></a></div></div>
+<div class="grid g3" style="margin-top:12px"><div class="card kpi"><span>Saved songs</span><b id="songCount">0</b><span>local library</span></div><div class="card kpi"><span>Service items</span><b id="queueCount">0</b><span>running order</span></div><div class="card kpi"><span>Slides prepared</span><b id="slideCount">0</b><span>this session</span></div></div>
+<div class="notice" style="margin-top:12px"><b>Output is independent.</b> The right-side monitor remains fixed while this main workspace scrolls.</div>
+</section>
+
+<section class="view" id="bible"><div class="head"><h2>Bible Slide Builder</h2><span class="muted">Prepare → Preview → Stage</span></div><div class="builder"><div class="card"><div class="toolbar"><select id="book" class="field select"><option>John</option><option>Matthew</option><option>Mark</option><option>Luke</option><option>Acts</option><option>Romans</option><option>Psalms</option><option>Proverbs</option><option>Isaiah</option><option>Ephesians</option></select><input id="ref" class="field" placeholder="3:16"></div><textarea id="verse" class="field" placeholder="Paste or type scripture text…"></textarea><div class="toolbar" style="margin-top:10px"><button class="btn primary" data-action="previewBible"><svg><use href="#play"/></svg> Preview</button><button class="btn" data-action="sendStage">Send to stage</button></div></div><div class="card"><div class="eyebrow">Preview</div><div class="preview"><div class="slideText" id="biblePreview">Your scripture appears here</div></div></div></div></section>
+
+<section class="view" id="songs"><div class="head"><h2>Song Library</h2><button class="btn primary" data-action="focusSong"><svg><use href="#plus"/></svg> New song</button></div><div class="card"><div class="toolbar"><input id="songTitle" class="field grow" placeholder="Song title"><input id="songMeta" class="field" placeholder="Key / artist"></div><textarea id="lyrics" class="field" placeholder="Lyrics or chord chart…"></textarea><div class="toolbar" style="margin-top:10px"><button class="btn primary" data-action="saveSong">Save song</button><button class="btn" data-action="clearSong">Clear</button></div></div><div class="card" style="margin-top:12px"><div class="head"><h2>Saved songs</h2></div><div id="songList" class="list"></div></div></section>
+
+<section class="view" id="service"><div class="head"><h2>Service Builder</h2><span class="muted">Running order</span></div><div class="card"><div class="toolbar"><input id="queueText" class="field grow" placeholder="Opening song, Welcome, Sermon…"><button class="btn primary" data-action="addQueue"><svg><use href="#plus"/></svg> Add</button></div><div id="queueList" class="list"></div></div></section>
+
+<section class="view" id="presets"><div class="head"><h2>Presentation Presets</h2></div><div class="grid g3"><button class="card action" data-preset="Classic"><svg><use href="#layers"/></svg><span><b>Classic</b><small>Centered lyrics</small></span></button><button class="card action" data-preset="Cinema"><svg><use href="#monitor"/></svg><span><b>Cinema</b><small>Large text</small></span></button><button class="card action" data-preset="Minimal"><svg><use href="#palette"/></svg><span><b>Minimal</b><small>Clean layout</small></span></button></div></section>
+
+<section class="view" id="style"><div class="head"><h2>Style</h2></div><div class="grid g2"><div class="card"><b>Slide text size</b><input id="size" class="range" type="range" min="20" max="58" value="32"><div class="muted" id="sizeValue">32 px</div></div><div class="card"><b>Alignment</b><div class="toolbar" style="margin-top:10px"><button class="btn" data-align="left">Left</button><button class="btn" data-align="center">Center</button><button class="btn" data-align="right">Right</button></div></div></div></section>
+
+<section class="view" id="output"><div class="head"><h2>Output Workspace</h2><button class="btn primary" data-action="fullscreen">Fullscreen</button></div><div class="stageFull"><div class="slideText" id="fullText">No slide on stage</div></div></section>
+
+<section class="view" id="settings"><div class="head"><h2>Settings</h2></div><div class="card"><p><b>VerseView Studio v3</b></p><p class="muted">Core navigation has a native fallback. JavaScript provides the presentation engine and editing features.</p><button class="btn" data-action="export">Export data</button> <button class="btn" data-action="clearData">Clear local data</button></div></section>
+</main>
+
+<aside class="outputDock" id="outputDock">
+<div class="outHead"><span class="outTitle">LIVE OUTPUT</span><span class="live">LIVE</span></div>
+<div class="screen" id="screen"><div class="slideText" id="stageText">No slide on stage</div></div>
+<div class="outMeta"><span id="stageRef">Ready</span><span>16:9</span></div>
+<div class="outBtns"><button class="outBtn" data-nav="prev"><svg><use href="#left"/></svg></button><button class="outBtn primary" data-nav="blank"><svg><use href="#blank"/></svg> Blank</button><button class="outBtn" data-nav="next"><svg><use href="#right"/></svg></button></div>
+<div class="outBtns2"><button class="outBtn" data-nav="full"><svg><use href="#fullscreen"/></svg> Fullscreen</button><button class="outBtn" data-nav="hide">Hide</button></div>
+<div class="upnext"><h3>UP NEXT</h3><div class="miniList" id="miniList"></div></div>
+</aside>
+</div>
+</section>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const names={home:"Dashboard",bible:"Bible",songs:"Songs",service:"Service",presets:"Presets",style:"Style",output:"Output Workspace",settings:"Settings"};
+const get=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}};
+const put=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let songs=get("vv3_songs",[]),queue=get("vv3_queue",[]),current=-1,slides=0,blank=false;
+
+function nav(id){if(!names[id])id="home";$$(".view").forEach(v=>v.classList.toggle("active",v.id===id));$$("[data-panel]").forEach(a=>a.classList.toggle("active",a.dataset.panel===id));$("#pageTitle").textContent=names[id]}
+function render(){
+$("#songCount").textContent=songs.length;$("#queueCount").textContent=queue.length;$("#slideCount").textContent=slides;
+const sl=$("#songList");sl.innerHTML=songs.length?"":"<div class='muted'>No songs saved yet.</div>";
+songs.forEach((s,i)=>{const d=document.createElement("div");d.className="item";d.innerHTML='<div><strong></strong><small></small></div><div class="itemBtns"><button class="iconBtn" data-action="loadSong" data-i="'+i+'"><svg><use href="#play"/></svg></button><button class="iconBtn" data-action="deleteSong" data-i="'+i+'"><svg><use href="#trash"/></svg></button></div>';d.querySelector("strong").textContent=s.title;d.querySelector("small").textContent=s.meta||"Song";sl.appendChild(d)});
+const q=$("#queueLiinput, select, textarea { width: 100%; background: #0b1220; color: white; border: 1px solid var(--line); border-radius: 8px; padding: 10px; outline: 0; }
 textarea { min-height: 100px; resize: vertical; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .btn { width: 100%; min-height: 42px; background: var(--blue); color: white; }

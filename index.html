@@ -117,6 +117,89 @@ function render(){
 $("#songCount").textContent=songs.length;$("#queueCount").textContent=queue.length;$("#slideCount").textContent=slides;
 const sl=$("#songList");sl.innerHTML=songs.length?"":"<div class='muted'>No songs saved yet.</div>";
 songs.forEach((s,i)=>{const d=document.createElement("div");d.className="item";d.innerHTML='<div><strong></strong><small></small></div><div class="itemBtns"><button class="iconBtn" data-action="loadSong" data-i="'+i+'"><svg><use href="#play"/></svg></button><button class="iconBtn" data-action="deleteSong" data-i="'+i+'"><svg><use href="#trash"/></svg></button></div>';d.querySelector("strong").textContent=s.title;d.querySelector("small").textContent=s.meta||"Song";sl.appendChild(d)});
+const q=$("#queueLi<symbol id="settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.2-1.7l1.5-1.1-1.6-2.7-1.7.8a7 7 0 0 0-2.8-1.7L14 3h-4l-.2 2.6A7 7 0 0 0 7 7.3l-1.7-.8-1.6 2.7 1.6 2.7a7 7 0 0 0 0 3.4l-1.6 2.7 1.7.8a7 7 0 0 0 2.8-1.7l.2 2.6h4l.2-2.6a7 7 0 0 0 2.8-1.7l1.7.8 1.6-2.7-1.5-1.1A7 7 0 0 0 19 12Z"/></symbol>
+<symbol id="play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></symbol>
+<symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6"/></symbol>
+<symbol id="left" viewBox="0 0 24 24"><path d="m14 5-7 7 7 7"/></symbol>
+<symbol id="right" viewBox="0 0 24 24"><path d="m10 5 7 7-7 7"/></symbol>
+<symbol id="blank" viewBox="0 0 24 24"><path d="M5 5l14 14"/></symbol>
+<symbol id="fullscreen" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></symbol>
+<symbol id="menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+</defs></svg>
+
+<div class="app" id="app">
+<aside class="sidebar">
+<div class="brand"><span class="brandIcon"><svg><use href="#monitor"/></svg></span><span class="brandText">VerseView Studio</span><button class="collapse" id="collapse" title="Collapse sidebar"><svg><use href="#menu"/></svg></button></div>
+<div class="navScroll">
+<div class="navTitle">Workspace</div>
+<nav class="nav">
+<a href="#home" data-panel="home" class="active"><svg><use href="#home"/></svg><span>Dashboard</span></a>
+<a href="#bible" data-panel="bible"><svg><use href="#book"/></svg><span>Bible</span></a>
+<a href="#songs" data-panel="songs"><svg><use href="#music"/></svg><span>Songs</span></a>
+<a href="#service" data-panel="service"><svg><use href="#calendar"/></svg><span>Service</span></a>
+<a href="#presets" data-panel="presets"><svg><use href="#layers"/></svg><span>Presets</span></a>
+<a href="#style" data-panel="style"><svg><use href="#palette"/></svg><span>Style</span></a>
+</nav>
+<div class="navTitle">System</div>
+<nav class="nav"><a href="#settings" data-panel="settings"><svg><use href="#settings"/></svg><span>Settings</span></a></nav>
+</div>
+<div class="sideFoot">Stationary control room<br>JS engine: <span id="sideStatus">active</span></div>
+</aside>
+
+<section class="content">
+<header class="header"><h1 id="pageTitle">Dashboard</h1><span class="sub">Control Room</span><div class="headerRight"><div class="status">ENGINE: <b id="engine">STARTING</b></div><button class="hbtn" id="outputBtn"><svg><use href="#monitor"/></svg> Output</button></div></header>
+<div class="workspace">
+<main class="main">
+
+<section class="view active" id="home">
+<div class="hero"><div class="heroMain"><span class="eyebrow">VerseView Studio v3</span><h2>Ready for service.</h2><div class="muted">Persistent output. Stable workspace. JavaScript-powered control.</div></div>
+<div class="actions"><a class="action" href="#bible" data-panel="bible"><svg><use href="#book"/></svg><span><b>Bible</b><small>Build scripture slides</small></span></a><a class="action" href="#songs" data-panel="songs"><svg><use href="#music"/></svg><span><b>Songs</b><small>Manage lyrics</small></span></a><a class="action" href="#service" data-panel="service"><svg><use href="#calendar"/></svg><span><b>Service</b><small>Running order</small></span></a><a class="action" href="#output" data-panel="output"><svg><use href="#monitor"/></svg><span><b>Output</b><small>Full output view</small></span></a></div></div>
+<div class="grid g3" style="margin-top:12px"><div class="card kpi"><span>Saved songs</span><b id="songCount">0</b><span>local library</span></div><div class="card kpi"><span>Service items</span><b id="queueCount">0</b><span>running order</span></div><div class="card kpi"><span>Slides prepared</span><b id="slideCount">0</b><span>this session</span></div></div>
+<div class="notice" style="margin-top:12px"><b>Output is independent.</b> The right-side monitor remains fixed while this main workspace scrolls.</div>
+</section>
+
+<section class="view" id="bible"><div class="head"><h2>Bible Slide Builder</h2><span class="muted">Prepare → Preview → Stage</span></div><div class="builder"><div class="card"><div class="toolbar"><select id="book" class="field select"><option>John</option><option>Matthew</option><option>Mark</option><option>Luke</option><option>Acts</option><option>Romans</option><option>Psalms</option><option>Proverbs</option><option>Isaiah</option><option>Ephesians</option></select><input id="ref" class="field" placeholder="3:16"></div><textarea id="verse" class="field" placeholder="Paste or type scripture text…"></textarea><div class="toolbar" style="margin-top:10px"><button class="btn primary" data-action="previewBible"><svg><use href="#play"/></svg> Preview</button><button class="btn" data-action="sendStage">Send to stage</button></div></div><div class="card"><div class="eyebrow">Preview</div><div class="preview"><div class="slideText" id="biblePreview">Your scripture appears here</div></div></div></div></section>
+
+<section class="view" id="songs"><div class="head"><h2>Song Library</h2><button class="btn primary" data-action="focusSong"><svg><use href="#plus"/></svg> New song</button></div><div class="card"><div class="toolbar"><input id="songTitle" class="field grow" placeholder="Song title"><input id="songMeta" class="field" placeholder="Key / artist"></div><textarea id="lyrics" class="field" placeholder="Lyrics or chord chart…"></textarea><div class="toolbar" style="margin-top:10px"><button class="btn primary" data-action="saveSong">Save song</button><button class="btn" data-action="clearSong">Clear</button></div></div><div class="card" style="margin-top:12px"><div class="head"><h2>Saved songs</h2></div><div id="songList" class="list"></div></div></section>
+
+<section class="view" id="service"><div class="head"><h2>Service Builder</h2><span class="muted">Running order</span></div><div class="card"><div class="toolbar"><input id="queueText" class="field grow" placeholder="Opening song, Welcome, Sermon…"><button class="btn primary" data-action="addQueue"><svg><use href="#plus"/></svg> Add</button></div><div id="queueList" class="list"></div></div></section>
+
+<section class="view" id="presets"><div class="head"><h2>Presentation Presets</h2></div><div class="grid g3"><button class="card action" data-preset="Classic"><svg><use href="#layers"/></svg><span><b>Classic</b><small>Centered lyrics</small></span></button><button class="card action" data-preset="Cinema"><svg><use href="#monitor"/></svg><span><b>Cinema</b><small>Large text</small></span></button><button class="card action" data-preset="Minimal"><svg><use href="#palette"/></svg><span><b>Minimal</b><small>Clean layout</small></span></button></div></section>
+
+<section class="view" id="style"><div class="head"><h2>Style</h2></div><div class="grid g2"><div class="card"><b>Slide text size</b><input id="size" class="range" type="range" min="20" max="58" value="32"><div class="muted" id="sizeValue">32 px</div></div><div class="card"><b>Alignment</b><div class="toolbar" style="margin-top:10px"><button class="btn" data-align="left">Left</button><button class="btn" data-align="center">Center</button><button class="btn" data-align="right">Right</button></div></div></div></section>
+
+<section class="view" id="output"><div class="head"><h2>Output Workspace</h2><button class="btn primary" data-action="fullscreen">Fullscreen</button></div><div class="stageFull"><div class="slideText" id="fullText">No slide on stage</div></div></section>
+
+<section class="view" id="settings"><div class="head"><h2>Settings</h2></div><div class="card"><p><b>VerseView Studio v3</b></p><p class="muted">Core navigation has a native fallback. JavaScript provides the presentation engine and editing features.</p><button class="btn" data-action="export">Export data</button> <button class="btn" data-action="clearData">Clear local data</button></div></section>
+</main>
+
+<aside class="outputDock" id="outputDock">
+<div class="outHead"><span class="outTitle">LIVE OUTPUT</span><span class="live">LIVE</span></div>
+<div class="screen" id="screen"><div class="slideText" id="stageText">No slide on stage</div></div>
+<div class="outMeta"><span id="stageRef">Ready</span><span>16:9</span></div>
+<div class="outBtns"><button class="outBtn" data-nav="prev"><svg><use href="#left"/></svg></button><button class="outBtn primary" data-nav="blank"><svg><use href="#blank"/></svg> Blank</button><button class="outBtn" data-nav="next"><svg><use href="#right"/></svg></button></div>
+<div class="outBtns2"><button class="outBtn" data-nav="full"><svg><use href="#fullscreen"/></svg> Fullscreen</button><button class="outBtn" data-nav="hide">Hide</button></div>
+<div class="upnext"><h3>UP NEXT</h3><div class="miniList" id="miniList"></div></div>
+</aside>
+</div>
+</section>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const names={home:"Dashboard",bible:"Bible",songs:"Songs",service:"Service",presets:"Presets",style:"Style",output:"Output Workspace",settings:"Settings"};
+const get=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}};
+const put=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let songs=get("vv3_songs",[]),queue=get("vv3_queue",[]),current=-1,slides=0,blank=false;
+
+function nav(id){if(!names[id])id="home";$$(".view").forEach(v=>v.classList.toggle("active",v.id===id));$$("[data-panel]").forEach(a=>a.classList.toggle("active",a.dataset.panel===id));$("#pageTitle").textContent=names[id]}
+function render(){
+$("#songCount").textContent=songs.length;$("#queueCount").textContent=queue.length;$("#slideCount").textContent=slides;
+const sl=$("#songList");sl.innerHTML=songs.length?"":"<div class='muted'>No songs saved yet.</div>";
+songs.forEach((s,i)=>{const d=document.createElement("div");d.className="item";d.innerHTML='<div><strong></strong><small></small></div><div class="itemBtns"><button class="iconBtn" data-action="loadSong" data-i="'+i+'"><svg><use href="#play"/></svg></button><button class="iconBtn" data-action="deleteSong" data-i="'+i+'"><svg><use href="#trash"/></svg></button></div>';d.querySelector("strong").textContent=s.title;d.querySelector("small").textContent=s.meta||"Song";sl.appendChild(d)});
 const q=$("#queueLiinput, select, textarea { width: 100%; background: #0b1220; color: white; border: 1px solid var(--line); border-radius: 8px; padding: 10px; outline: 0; }
 textarea { min-height: 100px; resize: vertical; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }

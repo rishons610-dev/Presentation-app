@@ -1,40 +1,552 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>VerseView Mobile Pro</title>
-  <style>
-    :root {
-      --primary: #2563eb;
-      --bg: #0f172a;
-      --panel: #1e293b;
-      --text: #f8fafc;
-      --accent: #10b981;
-      --danger: #ef4444;
-      --warning: #f59e0b;
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090d18">
+<title>VerseView Studio - Rebuilt</title>
+<style>
+:root {
+  --bg: #090d18;
+  --panel: #111827;
+  --line: #29364d;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --blue: #3b82f6;
+  --green: #10b981;
+  --red: #ef4444;
+  --amber: #f59e0b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; min-height: 100vh; }
+.app { max-width: 1100px; margin: auto; padding: 12px; }
+.top { position: sticky; top: 0; z-index: 10; background: rgba(9, 13, 24, 0.96); backdrop-filter: blur(8px); padding: 10px 0 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+.brand { font-weight: 900; font-size: 1.1rem; }
+.status { font-size: 11px; color: var(--green); margin-top: 2px; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; border: 0; border-radius: 8px; font-weight: 700; transition: opacity 0.2s; }
+button:hover { opacity: 0.9; }
+button:active { transform: scale(0.98); }
+.output-btn { background: var(--green); color: white; padding: 8px 16px; font-size: 13px; }
+.tabs { display: flex; gap: 6px; overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 4px; margin-bottom: 12px; }
+.tab { flex: 1 0 auto; background: transparent; color: var(--muted); padding: 10px 14px; font-size: 13px; border-radius: 8px; text-align: center; }
+.tab.active { background: var(--blue); color: white; }
+.panel { display: none; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.panel.active { display: block; }
+label { display: block; color: #cbd5e1; font-size: 12px; font-weight: 700; margin: 12px 0 6px; }
+input, select, textarea { width: 100%; background: #0b1220; color: white; border: 1px solid var(--line); border-radius: 8px; padding: 10px; outline: 0; }
+textarea { min-height: 100px; resize: vertical; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn { width: 100%; min-height: 42px; background: var(--blue); color: white; }
+.btn.green { background: var(--green); }
+.btn.red { background: var(--red); }
+.btn.amber { background: var(--amber); }
+.btn.secondary { background: #1e293b; color: var(--text); border: 1px solid var(--line); }
+.list { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; max-height: 220px; overflow-y: auto; }
+.item { padding: 10px 14px; background: #0b1422; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+.item:hover { background: #132035; }
+.item:last-child { border-bottom: 0; }
+.empty { text-align: center; color: var(--muted); padding: 16px; font-size: 13px; }
+.stage { position: relative; margin-top: 14px; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; border: 1px solid var(--line); }
+.stage.full { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 1000; border-radius: 0; aspect-ratio: auto; }
+.stage-text { width: 88%; padding: 20px; }
+.p { font-size: clamp(20px, 4vw, 44px); font-weight: 800; white-space: pre-line; text-shadow: 2px 2px 6px rgba(0,0,0,0.8); line-height: 1.25; }
+.s { font-size: clamp(16px, 3vw, 30px); color: #fde047; margin-top: 12px; white-space: pre-line; text-shadow: 2px 2px 6px rgba(0,0,0,0.8); line-height: 1.25; }
+.r { margin-top: 14px; color: #cbd5e1; font-size: 13px; display: inline-block; }
+.r.box { background: var(--blue); color: white; padding: 6px 12px; border-radius: 6px; font-weight: 700; }
+.tools { position: absolute; right: 12px; top: 12px; z-index: 2; }
+.tools button { background: rgba(17, 24, 39, 0.8); color: white; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-size: 14px; }
+.preview { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.preview div { background: #0b1422; border: 1px solid var(--line); padding: 10px; border-radius: 8px; font-size: 12px; }
+@media(max-width: 650px){ .grid, .preview { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div>
+      <div class="brand">✦ VerseView Studio</div>
+      <div class="status" id="status">● Ready</div>
+    </div>
+    <button class="output-btn" id="btn-output">📺 Projection Window</button>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="bible">📖 Bible</button>
+    <button class="tab" data-tab="songs">🎵 Songs</button>
+    <button class="tab" data-tab="presets">⚡ Presets</button>
+    <button class="tab" data-tab="style">🎨 Style</button>
+    <button class="tab" data-tab="queue">📅 Queue</button>
+  </nav>
+
+  <!-- BIBLE PANEL -->
+  <section class="panel active" id="panel-bible">
+    <b>Bible Passage Selection</b>
+    <div class="grid">
+      <div>
+        <label>Primary Version</label>
+        <select id="pv"></select>
+      </div>
+      <div>
+        <label>Secondary Version</label>
+        <select id="sv"></select>
+      </div>
+    </div>
+    <label>Passage</label>
+    <select id="pass"></select>
+    <div class="grid" style="margin-top:12px">
+      <button class="btn amber" id="btn-show-verse">Show Verse</button>
+      <button class="btn red" id="btn-blackout">Blackout</button>
+    </div>
+  </section>
+
+  <!-- SONGS PANEL -->
+  <section class="panel" id="panel-songs">
+    <b>Song Library</b>
+    <label>Search Songs</label>
+    <input id="search" placeholder="Type to filter songs…">
+    <div class="list" id="songlist"></div>
+    
+    <hr style="border-color:var(--line); margin:16px 0;">
+    <b>Add / Edit Song</b>
+    <label>Song Title</label>
+    <input id="title" placeholder="e.g. Amazing Grace">
+    <div class="grid">
+      <div>
+        <label>Primary Lyrics (Separate slides with empty lines)</label>
+        <textarea id="lp" placeholder="Verse 1 primary lyrics..."></textarea>
+      </div>
+      <div>
+        <label>Secondary Lyrics (Optional translated slides)</label>
+        <textarea id="ls" placeholder="Verse 1 secondary lyrics..."></textarea>
+      </div>
+    </div>
+    <button class="btn green" id="btn-save-song" style="margin-top:8px">💾 Save to Library</button>
+    
+    <div class="grid" style="margin-top:12px">
+      <button class="btn secondary" id="btn-prev-slide">← Previous Slide</button>
+      <button class="btn secondary" id="btn-next-slide">Next Slide →</button>
+    </div>
+    <div id="info" style="color:var(--muted); font-size:12px; margin-top:6px; text-align:center;"></div>
+  </section>
+
+  <!-- PRESETS PANEL -->
+  <section class="panel" id="panel-presets">
+    <b>Quick Slide Presets</b>
+    <div class="grid" style="margin-top:12px">
+      <button class="btn secondary preset-btn" data-p="Welcome to Service!" data-s="¡Bienvenidos al Servicio!" data-r="Opening">👋 Welcome</button>
+      <button class="btn secondary preset-btn" data-p="Praise & Worship" data-s="Alabanza y Adoración" data-r="Worship">🎵 Worship</button>
+      <button class="btn secondary preset-btn" data-p="Amen & Hallelujah!" data-s="¡Amén y Aleluya!" data-r="Congregational">🙌 Amen</button>
+      <button class="btn secondary preset-btn" data-p="God Bless You!" data-s="¡Dios te Bendiga!" data-r="Closing">🙏 Closing</button>
+    </div>
+  </section>
+
+  <!-- STYLE PANEL -->
+  <section class="panel" id="panel-style">
+    <b>Stage & Output Style</b>
+    <label>Background Theme</label>
+    <select id="bg">
+      <option value="#000000">Solid Black</option>
+      <option value="#0f172a">Midnight Blue</option>
+      <option value="linear-gradient(135deg, #2e1065, #581c87)">Royal Purple</option>
+      <option value="linear-gradient(135deg, #065f46, #0f172a)">Emerald Gradient</option>
+    </select>
+    <label>Font Family</label>
+    <select id="font">
+      <option value="system-ui, sans-serif">System Sans-Serif</option>
+      <option value="Georgia, serif">Georgia Serif</option>
+      <option value="'Courier New', monospace">Monospace</option>
+    </select>
+    <div class="grid">
+      <div>
+        <label>Primary Text Color</label>
+        <input id="pc" type="color" value="#ffffff">
+      </div>
+      <div>
+        <label>Secondary Text Color</label>
+        <input id="sc" type="color" value="#fde047">
+      </div>
+    </div>
+    <label>Reference Badge Style</label>
+    <select id="rm">
+      <option value="plain">Plain Text</option>
+      <option value="box">Filled Box</option>
+    </select>
+  </section>
+
+  <!-- QUEUE PANEL -->
+  <section class="panel" id="panel-queue">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <b>Service Queue</b>
+      <button class="btn red" id="btn-clear-queue" style="width:auto; padding:4px 10px; font-size:12px; min-height:0;">Clear All</button>
+    </div>
+    <p style="color:var(--muted); font-size:12px; margin-top:4px;">Click any item below to trigger live presentation.</p>
+    <div class="list" id="qlist"></div>
+  </section>
+
+  <!-- STAGE PREVIEW -->
+  <div class="stage" id="stage">
+    <div class="tools">
+      <button id="btn-fullscreen" title="Toggle Fullscreen">⛶</button>
+    </div>
+    <div class="stage-text">
+      <div class="p" id="op">For God so loved the world…</div>
+      <div class="s" id="os">Porque de tal manera amó Dios al mundo…</div>
+      <div class="r" id="or">John 3:16</div>
+    </div>
+  </div>
+
+  <div class="preview">
+    <div><b>PRIMARY PREVIEW</b><br><span id="pp"></span></div>
+    <div><b>SECONDARY PREVIEW</b><br><span id="ps"></span></div>
+  </div>
+</div>
+
+<script>
+(()=>{
+  const $ = id => document.getElementById(id);
+
+  const passages = {
+    j316: "John 3:16",
+    p231: "Psalm 23:1",
+    g11: "Genesis 1:1",
+    p119: "Psalm 119:105"
+  };
+
+  const versions = {
+    KJV: {
+      name: "King James Version",
+      j316: "For God so loved the world, that he gave his only begotten Son...",
+      p231: "The LORD is my shepherd; I shall not want.",
+      g11: "In the beginning God created the heaven and the earth.",
+      p119: "Thy word is a lamp unto my feet, and a light unto my path."
+    },
+    RVR: {
+      name: "Reina-Valera 1960",
+      j316: "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito...",
+      p231: "Jehová es mi pastor; nada me faltará.",
+      g11: "En el principio creó Dios los cielos y la tierra.",
+      p119: "Lámpara es a mis pies tu palabra, y lumbrera a mi camino."
+    }
+  };
+
+  let songs = [
+    {
+      title: "Amazing Grace",
+      slides: [
+        { p: "Amazing grace! How sweet the sound\nThat saved a wretch like me!", s: "Sublime gracia del Señor\nQue a un pecador salvó" },
+        { p: "I once was lost, but now am found;\nWas blind, but now I see.", s: "Fui ciego mas hoy veo yo\nPerdido fui mas hoy" }
+      ]
+    }
+  ];
+
+  let currentSong = null;
+  let currentSlideIdx = 0;
+  let queue = [];
+
+  // Load persistence
+  try {
+    const data = JSON.parse(localStorage.getItem("vsStudio"));
+    if (data) {
+      if (data.songs && data.songs.length) songs = data.songs;
+      if (data.queue && data.queue.length) queue = data.queue;
+    }
+  } catch(e) {}
+
+  const channel = ("BroadcastChannel" in window) ? new BroadcastChannel("vsStudio") : null;
+
+  function saveData() {
+    try {
+      localStorage.setItem("vsStudio", JSON.stringify({ songs, queue }));
+    } catch(e){}
+  }
+
+  function switchTab(targetTab) {
+    document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === targetTab));
+    document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + targetTab));
+  }
+
+  function getStyleState() {
+    return {
+      bg: $("bg").value,
+      font: $("font").value,
+      pc: $("pc").value,
+      sc: $("sc").value,
+      rm: $("rm").value
+    };
+  }
+
+  function applyStyle() {
+    const st = getStyleState();
+    const stage = $("stage");
+    if (!stage) return;
+    stage.style.background = st.bg;
+    const textElem = stage.querySelector(".stage-text");
+    if (textElem) textElem.style.fontFamily = st.font;
+    $("op").style.color = st.pc;
+    $("os").style.color = st.sc;
+    $("or").className = "r " + (st.rm === "box" ? "box" : "");
+  }
+
+  function updateLiveDisplay(primary, secondary, ref) {
+    $("op").textContent = primary || "";
+    $("os").textContent = secondary || "";
+    $("or").textContent = ref || "";
+    $("pp").textContent = primary || "";
+    $("ps").textContent = secondary || "";
+    $("status").textContent = primary ? "● Live" : "● Idle";
+    applyStyle();
+
+    if (channel) {
+      channel.postMessage({
+        type: "live",
+        p: primary,
+        s: secondary,
+        r: ref,
+        st: getStyleState()
+      });
+    }
+  }
+
+  function initApp() {
+    // Populate select options
+    Object.entries(versions).forEach(([k, v]) => {
+      $("pv").add(new Option(k + " — " + v.name, k));
+      $("sv").add(new Option(k + " — " + v.name, k));
+    });
+    $("sv").add(new Option("None", "none"));
+
+    Object.entries(passages).forEach(([k, v]) => {
+      $("pass").add(new Option(v, k));
+    });
+
+    $("pv").value = "KJV";
+    $("sv").value = "RVR";
+
+    renderSongs();
+    renderQueue();
+    applyStyle();
+  }
+
+  function renderSongs() {
+    const query = $("search").value.toLowerCase();
+    const container = $("songlist");
+    container.innerHTML = "";
+
+    const filtered = songs.filter(s => s.title.toLowerCase().includes(query));
+    filtered.forEach((song) => {
+      const item = document.createElement("div");
+      item.className = "item";
+      item.innerHTML = `<span><b>${song.title}</b></span><span style="font-size:12px;color:var(--muted)">${song.slides.length} slides</span>`;
+      item.onclick = () => {
+        currentSong = song;
+        currentSlideIdx = 0;
+        showCurrentSongSlide();
+      };
+      container.appendChild(item);
+    });
+
+    if (!container.children.length) {
+      container.innerHTML = '<div class="empty">No songs found.</div>';
+    }
+  }
+
+  function showCurrentSongSlide() {
+    if (!currentSong || !currentSong.slides[currentSlideIdx]) return;
+    const slide = currentSong.slides[currentSlideIdx];
+    const ref = `${currentSong.title} (${currentSlideIdx + 1}/${currentSong.slides.length})`;
+    updateLiveDisplay(slide.p, slide.s, ref);
+    $("info").textContent = `${currentSong.title} • Slide ${currentSlideIdx + 1} of ${currentSong.slides.length}`;
+  }
+
+  function renderQueue() {
+    const container = $("qlist");
+    container.innerHTML = "";
+
+    if (!queue.length) {
+      container.innerHTML = '<div class="empty">Queue is empty.</div>';
+      return;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+    queue.forEach((item, index) => {
+      const el = document.createElement("div");
+      el.className = "item";
+      el.innerHTML = `
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80%;">${item.r || item.p}</span>
+        <button class="btn red" style="width:auto;padding:2px 8px;font-size:11px;min-height:0;" data-del="${index}">✕</button>
+      `;
+      el.onclick = (e) => {
+        if(e.target.dataset.del !== undefined) return;
+        updateLiveDisplay(item.p, item.s, item.r);
+      };
+      container.appendChild(el);
+    });
 
-    header {
-      background-color: var(--panel);
-      padding: 0.75rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #334155;
+    container.querySelectorAll("[data-del]").forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.dataset.del, 10);
+        queue.splice(idx, 1);
+        saveData();
+        renderQueue();
+      };
+    });
+  }
+
+  function openProjectionWindow() {
+    const win = window.open(location.href.split("?")[0] + "?output=1", "VerseViewOutput", "width=1200,height=800");
+    if (!win) {
+      alert("Please allow pop-ups for VerseView Studio projection output window.");
+      return;
+    }
+    setTimeout(() => {
+      if (channel) {
+        channel.postMessage({
+          type: "live",
+          p: $("op").textContent,
+          s: $("os").textContent,
+          r: $("or").textContent,
+          st: getStyleState()
+        });
+      }
+    }, 600);
+  }
+
+  // --- Event Listeners ---
+  $("tabs").addEventListener("click", e => {
+    const btn = e.target.closest("[data-tab]");
+    if (btn) switchTab(btn.dataset.tab);
+  });
+
+  $("btn-show-verse").onclick = () => {
+    const pv = $("pv").value;
+    const sv = $("sv").value;
+    const pass = $("pass").value;
+
+    const primaryText = versions[pv][pass];
+    const secondaryText = (sv === "none") ? "" : versions[sv][pass];
+    const refText = passages[pass] + " (" + pv + (sv === "none" ? "" : " / " + sv) + ")";
+
+    updateLiveDisplay(primaryText, secondaryText, refText);
+    queue.push({ p: primaryText, s: secondaryText, r: refText });
+    saveData();
+    renderQueue();
+  };
+
+  $("btn-blackout").onclick = () => updateLiveDisplay("", "", "");
+  $("btn-output").onclick = openProjectionWindow;
+
+  $("btn-fullscreen").onclick = () => {
+    const stage = $("stage");
+    if (!document.fullscreenElement) {
+      stage.requestFullscreen ? stage.requestFullscreen().catch(() => stage.classList.add("full")) : stage.classList.add("full");
+    } else {
+      document.exitFullscreen ? document.exitFullscreen() : stage.classList.remove("full");
+    }
+  };
+
+  $("btn-prev-slide").onclick = () => {
+    if (currentSong && currentSlideIdx > 0) {
+      currentSlideIdx--;
+      showCurrentSongSlide();
+    }
+  };
+
+  $("btn-next-slide").onclick = () => {
+    if (currentSong && currentSlideIdx < currentSong.slides.length - 1) {
+      currentSlideIdx++;
+      showCurrentSongSlide();
+    }
+  };
+
+  $("btn-save-song").onclick = () => {
+    const title = $("title").value.trim();
+    const lp = $("lp").value.trim();
+    const ls = $("ls").value.trim();
+
+    if (!title || !lp) {
+      alert("Please enter a title and primary lyrics.");
+      return;
     }
 
-    .app-container { display: flex; flex-direction: column; flex: 1; padding: 0.5rem; gap: 0.75rem; overflow-y: auto; }
+    const pVerses = lp.split(/\n\s*\n/);
+    const sVerses = ls ? ls.split(/\n\s*\n/) : [];
 
-    /* Navigation Tabs */
-    .tab-bar { display: flex; gap: 0.25rem; background: #0f172a; padding: 0.25rem; border-radius: 6px; overflow-x: auto; }
-    .tab-btn {
-      flex: 1;
-      min-width: 75px;
-      padding: 0.6rem 0.2rem;
+    const slides = pVerses.map((v, i) => ({
+      p: v.trim(),
+      s: (sVerses[i] || "").trim()
+    }));
+
+    songs.push({ title, slides });
+    saveData();
+    
+    currentSong = songs[songs.length - 1];
+    currentSlideIdx = 0;
+    renderSongs();
+    showCurrentSongSlide();
+
+    $("title").value = "";
+    $("lp").value = "";
+    $("ls").value = "";
+  };
+
+  document.querySelectorAll(".preset-btn").forEach(btn => {
+    btn.onclick = () => {
+      const p = btn.dataset.p;
+      const s = btn.dataset.s;
+      const r = btn.dataset.r;
+      updateLiveDisplay(p, s, r);
+      queue.push({ p, s, r });
+      saveData();
+      renderQueue();
+    };
+  });
+
+  $("btn-clear-queue").onclick = () => {
+    queue = [];
+    saveData();
+    renderQueue();
+  };
+
+  $("search").oninput = renderSongs;
+
+  ["bg", "font", "pc", "sc", "rm"].forEach(id => {
+    $(id).oninput = () => {
+      applyStyle();
+      if (channel) {
+        channel.postMessage({ type: "style", st: getStyleState() });
+      }
+    };
+  });
+
+  // --- Secondary Projection Window Logic ---
+  if (new URLSearchParams(location.search).get("output") === "1") {
+    document.body.innerHTML = `
+      <div class="stage full" id="remote">
+        <div class="stage-text">
+          <div class="p" id="rp"></div>
+          <div class="s" id="rs"></div>
+          <div class="r" id="rr"></div>
+        </div>
+      </div>
+    `;
+
+    function applyRemoteStyle(st) {
+      const remote = $("remote");
+      if (!remote || !st) return;
+      remote.style.background = st.bg;
+      remote.querySelector(".stage-text").style.fontFamily = st.font;
+      $("rp").style.color = st.pc;
+      $("rs").style.color = st.sc;
+      $("rr").className = "r " + (st.rm === "box" ? "box" : "");
+    }
+
+    if (channel) {
+      channel.onmessage = e => {
+        const m = e.data;
+        if (m.type === "live") {
+          $("rp").textContent = m.p |      padding: 0.6rem 0.2rem;
       font-size: 0.75rem;
       font-weight: bold;
       background: transparent;
